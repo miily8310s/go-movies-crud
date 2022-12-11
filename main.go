@@ -26,11 +26,13 @@ type Director struct {
 var movies []Movie
 
 func getMovies(w http.ResponseWriter, r * http.Request)  {
+	enableCors(&w)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(movies)
 }
 
 func deleteMovie(w http.ResponseWriter, r * http.Request)  {
+	enableCors(&w)
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 	for index, item := range(movies) {
@@ -42,6 +44,7 @@ func deleteMovie(w http.ResponseWriter, r * http.Request)  {
 }
 
 func getMovie(w http.ResponseWriter, r * http.Request)  {
+	enableCors(&w)
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 	for _, item := range(movies) {
@@ -53,6 +56,7 @@ func getMovie(w http.ResponseWriter, r * http.Request)  {
 }
 
 func createMovie(w http.ResponseWriter, r * http.Request)  {
+	enableCors(&w)
 	w.Header().Set("Content-Type", "application/json")
 	var movie Movie
 	_ = json.NewDecoder(r.Body).Decode(&movie)
@@ -62,6 +66,7 @@ func createMovie(w http.ResponseWriter, r * http.Request)  {
 }
 
 func updateMovie(w http.ResponseWriter, r * http.Request)  {
+	enableCors(&w)
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 	for index, item := range(movies) {
@@ -75,6 +80,13 @@ func updateMovie(w http.ResponseWriter, r * http.Request)  {
 		}
 	}
 }
+
+func enableCors(w *http.ResponseWriter) {
+	(*w).Header().Set("Access-Control-Allow-Headers", "*")
+  (*w).Header().Set("Access-Control-Allow-Origin", "*")
+  (*w).Header().Set( "Access-Control-Allow-Methods","GET, POST, PUT, DELETE, OPTIONS" )
+}
+
 func main()  {
 	r := mux.NewRouter()
 
