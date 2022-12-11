@@ -3,12 +3,12 @@ package main
 import (
 	"encoding/json"
 	"fmt"
-	"log"
 	"math/rand"
 	"net/http"
 	"strconv"
 
 	"github.com/gorilla/mux"
+	"github.com/rs/cors"
 )
 
 type Movie struct {
@@ -26,13 +26,13 @@ type Director struct {
 var movies []Movie
 
 func getMovies(w http.ResponseWriter, r * http.Request)  {
-	enableCors(&w)
+	// enableCors(&w)
 	w.Header().Set("Content-Type", "application/json")
 	json.NewEncoder(w).Encode(movies)
 }
 
 func deleteMovie(w http.ResponseWriter, r * http.Request)  {
-	enableCors(&w)
+	// enableCors(&w)
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 	for index, item := range(movies) {
@@ -44,7 +44,7 @@ func deleteMovie(w http.ResponseWriter, r * http.Request)  {
 }
 
 func getMovie(w http.ResponseWriter, r * http.Request)  {
-	enableCors(&w)
+	// enableCors(&w)
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 	for _, item := range(movies) {
@@ -56,7 +56,7 @@ func getMovie(w http.ResponseWriter, r * http.Request)  {
 }
 
 func createMovie(w http.ResponseWriter, r * http.Request)  {
-	enableCors(&w)
+	// enableCors(&w)
 	w.Header().Set("Content-Type", "application/json")
 	var movie Movie
 	_ = json.NewDecoder(r.Body).Decode(&movie)
@@ -66,7 +66,7 @@ func createMovie(w http.ResponseWriter, r * http.Request)  {
 }
 
 func updateMovie(w http.ResponseWriter, r * http.Request)  {
-	enableCors(&w)
+	// enableCors(&w)
 	w.Header().Set("Content-Type", "application/json")
 	params := mux.Vars(r)
 	for index, item := range(movies) {
@@ -98,8 +98,8 @@ func main()  {
 	r.HandleFunc("/movie/{id}", updateMovie).Methods("PUT")
 	r.HandleFunc("/movie/{id}", deleteMovie).Methods("DELETE")
 
-	fmt.Println("Starting server at port 8080\n")
-
-	log.Fatal(http.ListenAndServe(":8080", r))
+	handler := cors.Default().Handler(r)
+	fmt.Println("Starting server at port 8080")
+	http.ListenAndServe(":8080", handler)
 }
 
